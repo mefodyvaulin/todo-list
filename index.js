@@ -38,39 +38,84 @@ class Component {
   }
 
   update() {
-    this._domNode =  this.render();
-    document
+    const oldNode = this._domNode;
+    const newNode = this.render();
+
+    if (oldNode && oldNode.parentNode) {
+      oldNode.replaceWith(newNode);
+    }
+
+    this._domNode = newNode;
+  }
+  delete(){
+    this._domNode.remove();
   }
 }
 class Task extends Component {
-  constructor(name) {
+  constructor(id, name, onDelete) {
     super();
+    this.id = id;
     this.name = name;
+    this.onDelete = onDelete;
   }
 
   render() {
     return createElement("li", {}, [
       createElement("input", { type: "checkbox" }, []),
       createElement("label", {}, this.name),
-      createElement("button", {}, "🗑️")
+      createElement("button", {}, "🗑️",
+          [{name: "click", action: () => {
+              this.delete()
+              this.onDelete(this.id)
+            } }])
     ])
   }
 
 }
 
 class AddTask extends Component {
-  constructor(state) {
-
+  constructor(onAdd, onInput) {
     super();
     this.curState = ""
-    this.id = ""
-    this.state = state;
+    this.onAdd = onAdd;
+    this.onInput = onInput;
   }
+
+
+  render(){
+    return [
+      createElement("input", {
+        id: "new-todo",
+        type: "text",
+        placeholder: "Задание",
+      }, [],[
+          {name: "change", action: this.onInput}
+      ]),
+      createElement("button", {id: "add-btn"}, "+" ,[
+        {name: "click", action: this.onAdd}
+        ]),
+    ]
+  }
+}
+
+class TodoList extends Component {
+  constructor() {
+    super();
+    this.curState = ""
+    this.state = ["Сделать домашку", "Сделать практику", "Пойти домой"]
+    this.state = new Map();
+    this.state.set(1, "Сделать домашку")
+    this.state.set(2, "Сделать практику")
+    this.state.set(3, "Пойти домой")
+    this.counter = 3;
+  }
+
   onAddTask(){
     console.log("onAddTask");
     if (this.curState === "" || this.curState === null)
       return;
-    this.state.push(this.curState);
+    this.counter += 1;
+    this.state.set(this.counter, this.curState);
     this.curState = "";
     this.update();
   }
@@ -80,41 +125,25 @@ class AddTask extends Component {
     this.curState = document.getElementById("new-todo").value;
   }
 
-  render(){
-    return [
-      createElement("input", {
-        id: "new-todo",
-        type: "text",
-        placeholder: "Задание",
-      }, [],[
-          {name: "change", action: () => {this.onAddInputChange ()}}
-      ]),
-      createElement("button", {id: "add-btn"}, "+" ,[
-        {name: "click", action: () => {
-            this.onAddTask()
-          }}
-        ]),
-    ]
-  }
-}
-
-class TodoList extends Component {
-  constructor() {
-    super();
-
-    this.state = ["Сделать домашку", "Сделать практику", "Пойти домой"]
+  onDeleteById(id){
+    console.log("onDeleteById");
+    this.state.delete(id);
   }
 
   render() {
     const tasks = [];
-    for (let state of this.state) {
-        const task = new Task(state).getDomNode();
+    for (let state of this.state.entries()) {
+        let id = state[0];
+        let taskText = state[1];
+        const task = new Task(id, taskText, (id) => this.onDeleteById(id)).getDomNode();
         tasks.push(task);
     }
 
+
     return createElement("div", {class: "todo-list"}, [
       createElement("h1", {}, "TODO List"),
-      createElement("div", {class: "add-todo"}, new AddTask(this.state).getDomNode()),
+      createElement("div", {class: "add-todo"}, new AddTask((() => this.onAddTask()),
+          () => this.onAddInputChange()).getDomNode()),
       createElement("ul", {id: "todos"}, tasks),
     ])
   }
