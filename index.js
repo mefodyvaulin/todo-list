@@ -61,7 +61,9 @@ class Task extends Component {
 
   render() {
     return createElement("li", {}, [
-      createElement("input", { type: "checkbox" }, []),
+      createElement("input", { type: "checkbox" }, [], [
+          {name: "change", action: this.onCompleteTask}
+      ]),
       createElement("label", {}, this.name),
       createElement("button", {}, "🗑️",
           [{name: "click", action: () => {
@@ -69,6 +71,14 @@ class Task extends Component {
               this.onDelete(this.id)
             } }])
     ])
+  }
+
+  onCompleteTask(){
+    if (this.checked)
+      this.nextElementSibling.style.color = "gray";
+    else{
+      this.nextElementSibling.style.color = "black";
+    }
   }
 
 }
