@@ -71,7 +71,7 @@ class AddTask extends Component {
       }, [
           {name: "change", action: this.onAddInputChange}
       ]),
-      createElement("button", {id: "add-btn"}, [
+      createElement("button", {id: "add-btn"}, "+" ,[
         {name: "onClick", action: this.onAddTask}
         ]),
     ]
