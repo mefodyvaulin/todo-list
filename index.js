@@ -46,6 +46,8 @@ class TodoList extends Component {
   }
 
   onAddTask(){
+    if (this.state === "" || this.state === null)
+      return;
     this.state.append(this.curState);
     this.curState = "";
   }
