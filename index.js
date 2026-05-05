@@ -57,6 +57,7 @@ class Task extends Component {
     this.id = id;
     this.name = name;
     this.onDelete = onDelete;
+    this.tapped = false;
   }
 
   render() {
@@ -65,14 +66,25 @@ class Task extends Component {
           {name: "change", action: this.onCompleteTask}
       ]),
       createElement("label", {}, this.name),
-      createElement("button", {}, "🗑️",
-          [{name: "click", action: () => {
-              this.delete()
-              this.onDelete(this.id)
-            } }])
-    ])
+      createElement("button", {}, "🗑️")
+    ], [{name: "click", action: (e) => {
+        console.log("click")
+      if (e.target.tagName !== "BUTTON") {
+        return;
+      }
+      if (!this.tapped) {
+        this.tapped = true;
+        e.target.style.backgroundColor = "red";
+        return;
+      }
+      this.delete()
+      this.onDelete(this.id)}}])
   }
 
+  onDelete(){
+
+
+  }
   onCompleteTask(){
     if (this.checked)
       this.nextElementSibling.style.color = "gray";
