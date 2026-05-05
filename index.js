@@ -39,6 +39,7 @@ class Component {
 
   update() {
     this._domNode =  this.render();
+    document
   }
 }
 class Task extends Component {
@@ -58,14 +59,18 @@ class Task extends Component {
 }
 
 class AddTask extends Component {
-  constructor() {
+  constructor(state) {
+
     super();
+    this.curState = ""
+    this.id = ""
+    this.state = state;
   }
   onAddTask(){
     console.log("onAddTask");
     if (this.curState === "" || this.curState === null)
       return;
-    this.state.append(this.curState);
+    this.state.push(this.curState);
     this.curState = "";
     this.update();
   }
@@ -73,7 +78,6 @@ class AddTask extends Component {
   onAddInputChange(){
     console.log("onAddInputChange");
     this.curState = document.getElementById("new-todo").value;
-    this.update();
   }
 
   render(){
@@ -82,11 +86,13 @@ class AddTask extends Component {
         id: "new-todo",
         type: "text",
         placeholder: "Задание",
-      }, [
-          {name: "change", action: this.onAddInputChange}
+      }, [],[
+          {name: "change", action: () => {this.onAddInputChange ()}}
       ]),
       createElement("button", {id: "add-btn"}, "+" ,[
-        {name: "onClick", action: this.onAddTask}
+        {name: "click", action: () => {
+            this.onAddTask()
+          }}
         ]),
     ]
   }
@@ -95,7 +101,7 @@ class AddTask extends Component {
 class TodoList extends Component {
   constructor() {
     super();
-    this.curState = ""
+
     this.state = ["Сделать домашку", "Сделать практику", "Пойти домой"]
   }
 
@@ -108,7 +114,7 @@ class TodoList extends Component {
 
     return createElement("div", {class: "todo-list"}, [
       createElement("h1", {}, "TODO List"),
-      createElement("div", {class: "add-todo"}, new AddTask().getDomNode()),
+      createElement("div", {class: "add-todo"}, new AddTask(this.state).getDomNode()),
       createElement("ul", {id: "todos"}, tasks),
     ])
   }
