@@ -49,7 +49,7 @@ class Task extends Component {
 
   render() {
     return createElement("li", {}, [
-      createElement("input", { type: "checkbox" }),
+      createElement("input", { type: "checkbox" }, []),
       createElement("label", {}, this.name),
       createElement("button", {}, "🗑️")
     ])
@@ -60,6 +60,20 @@ class Task extends Component {
 class AddTask extends Component {
   constructor() {
     super();
+  }
+  onAddTask(){
+    console.log("onAddTask");
+    if (this.curState === "" || this.curState === null)
+      return;
+    this.state.append(this.curState);
+    this.curState = "";
+    this.update();
+  }
+
+  onAddInputChange(){
+    console.log("onAddInputChange");
+    this.curState = document.getElementById("new-todo").value;
+    this.update();
   }
 
   render(){
@@ -83,17 +97,6 @@ class TodoList extends Component {
     super();
     this.curState = ""
     this.state = ["Сделать домашку", "Сделать практику", "Пойти домой"]
-  }
-
-  onAddTask(){
-    if (this.curState === "" || this.curState === null)
-      return;
-    this.state.append(this.curState);
-    this.curState = "";
-  }
-
-  onAddInputChange(){
-    this.curState = document.getElementById("new-todo").value;
   }
 
   render() {
