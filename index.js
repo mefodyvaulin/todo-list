@@ -32,6 +32,42 @@ class Component {
     this._domNode = this.render();
     return this._domNode;
   }
+
+  update() {
+    this._domNode =  this.render();
+  }
+}
+class Task extends Component {
+  constructor(name) {
+    super();
+    this.name = name;
+  }
+
+  render() {
+    return createElement("li", {}, [
+      createElement("input", { type: "checkbox" }),
+      createElement("label", {}, this.name),
+      createElement("button", {}, "🗑️")
+    ])
+  }
+
+}
+
+class AddTask extends Component {
+  constructor() {
+    super();
+  }
+
+  render(){
+    return [
+      createElement("input", {
+        id: "new-todo",
+        type: "text",
+        placeholder: "Задание",
+      }),
+      createElement("button", {id: "add-btn"}, "+"),
+    ]
+  }
 }
 
 class TodoList extends Component {
@@ -43,24 +79,13 @@ class TodoList extends Component {
   render() {
     const tasks = [];
     for (let state of this.state) {
-        const task = createElement("li", {}, [
-          createElement("input", { type: "checkbox" }),
-          createElement("label", {}, state),
-          createElement("button", {}, "🗑️")
-        ])
+        const task = new Task(state).getDomNode();
         tasks.push(task);
     }
 
     return createElement("div", {class: "todo-list"}, [
       createElement("h1", {}, "TODO List"),
-      createElement("div", {class: "add-todo"}, [
-        createElement("input", {
-          id: "new-todo",
-          type: "text",
-          placeholder: "Задание",
-        }),
-        createElement("button", {id: "add-btn"}, "+"),
-      ]),
+      createElement("div", {class: "add-todo"}, new AddTask().getDomNode()),
       createElement("ul", {id: "todos"}, tasks),
     ])
   }
